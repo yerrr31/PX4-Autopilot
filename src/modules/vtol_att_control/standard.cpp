@@ -69,6 +69,7 @@ void Standard::update_vtol_state()
 	 * For the back transition the pusher motor is immediately stopped and rotors reactivated.
 	 */
 
+	const vtol_mode previous_vtol_mode = _vtol_mode;
 	float mc_weight = _mc_roll_weight;
 
 	if (_vtol_vehicle_status->fixed_wing_system_failure) {
@@ -162,6 +163,15 @@ void Standard::update_vtol_state()
 	case vtol_mode::TRANSITION_TO_MC:
 		_common_vtol_mode = mode::TRANSITION_TO_MC;
 		break;
+	}
+	if (_vtol_mode == vtol_mode::FW_MODE && previous_vtol_mode != vtol_mode::FW_MODE) {
+		_fw_lift_assist_start = hrt_absolute_time();
+		_fw_lift_assist_started = true;
+	}
+
+	if (_vtol_mode != vtol_mode::FW_MODE) {
+		_fw_lift_assist_started = false;
+		_fw_lift_assist_start = 0;
 	}
 }
 
@@ -351,14 +361,42 @@ void Standard::fill_actuator_outputs()
 
 		break;
 
-	case vtol_mode::FW_MODE:
+	case vtol_mode::FW_MODE: {
 
 		// FW actuators
 		_torque_setpoint_1->xyz[0] = _vehicle_torque_setpoint_virtual_fw->xyz[0];
 		_torque_setpoint_1->xyz[1] = _vehicle_torque_setpoint_virtual_fw->xyz[1];
 		_torque_setpoint_1->xyz[2] = _vehicle_torque_setpoint_virtual_fw->xyz[2];
 		_thrust_setpoint_0->xyz[0] = _vehicle_thrust_setpoint_virtual_fw->xyz[0];
+
+		// Experimental residual multicopter lift thrust in fixed-wing mode.
+		// Ramp from VT_FW_MC_THR_I to VT_FW_MC_THR_B over VT_FW_MC_THR_R seconds,
+		// then keep VT_FW_MC_THR_B during fixed-wing mode.
+		const float thr_initial = math::constrain(_param_vt_fw_mc_thr_i.get(), 0.0f, 0.5f);
+		const float thr_base = math::constrain(_param_vt_fw_mc_thr_b.get(), 0.0f, 0.5f);
+		const float ramp_time = math::max(_param_vt_fw_mc_thr_r.get(), 0.0f);
+		
+		float lift_assist = thr_base;
+
+		if (_fw_lift_assist_started && _fw_lift_assist_start > 0 && ramp_time > 1e-6f) {
+			const float elapsed_s = (hrt_absolute_time() - _fw_lift_assist_start) * 1e-6f;
+			const float ramp = math::constrain(elapsed_s / ramp_time, 0.0f, 1.0f);
+
+			lift_assist = thr_initial + (thr_base - thr_initial) * ramp;
+
+		} else if (_fw_lift_assist_started) {
+			lift_assist = thr_base;
+		}
+
+		lift_assist = math::constrain(lift_assist, 0.0f, 0.5f);
+
+		// PX4 body frame convention: upward multicopter thrust is normally negative body-z.
+		// Verify this sign with propellers removed.
+		_thrust_setpoint_0->xyz[2] = -lift_assist;
+
 		break;
+	}
+
 	}
 }
 

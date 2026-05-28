@@ -79,11 +79,16 @@ private:
 	hrt_abstime _last_time_pusher_transition_update{0};
 
 	void parameters_update() override;
+	hrt_abstime _fw_lift_assist_start{0};
+    bool _fw_lift_assist_started{false};
 
 	DEFINE_PARAMETERS_CUSTOM_PARENT(VtolType,
 					(ParamFloat<px4::params::VT_PSHER_SLEW>) _param_vt_psher_slew,
 					(ParamFloat<px4::params::VT_B_TRANS_RAMP>) _param_vt_b_trans_ramp,
-					(ParamFloat<px4::params::FW_PSP_OFF>) _param_fw_psp_off
+					(ParamFloat<px4::params::FW_PSP_OFF>) _param_fw_psp_off,
+					(ParamFloat<px4::params::VT_FW_MC_THR_I>) _param_vt_fw_mc_thr_i,
+					(ParamFloat<px4::params::VT_FW_MC_THR_B>) _param_vt_fw_mc_thr_b,
+					(ParamFloat<px4::params::VT_FW_MC_THR_R>) _param_vt_fw_mc_thr_r
 				       )
 };
 #endif
