@@ -102,9 +102,17 @@ void ActuatorEffectivenessStandardVTOL::setFlightPhase(const FlightPhase &flight
 	// update stopped motors
 	switch (flight_phase) {
 	case FlightPhase::FORWARD_FLIGHT:
-		_stopped_motors_mask |= _upwards_motors_mask;
-		break;
+		if (_param_vt_fw_mc_thr_i.get() > 0.0f || _param_vt_fw_mc_thr_b.get() > 0.0f) {
+			// Keep upward lift motors active in forward flight when residual lift assist is enabled.
+			_stopped_motors_mask &= ~_upwards_motors_mask;
 
+		} else {
+			// Default PX4 behavior: stop upward lift motors in forward flight.
+			_stopped_motors_mask |= _upwards_motors_mask;
+		}
+
+		break;
+		
 	case FlightPhase::HOVER_FLIGHT:
 	case FlightPhase::TRANSITION_FF_TO_HF:
 	case FlightPhase::TRANSITION_HF_TO_FF:

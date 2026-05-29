@@ -153,14 +153,7 @@ void Standard::update_vtol_state()
 		break;
 
 	case vtol_mode::FW_MODE:
-		if (_param_vt_fw_mc_thr_i.get() > 0.0f || _param_vt_fw_mc_thr_b.get() > 0.0f) {
-			_common_vtol_mode = mode::TRANSITION_TO_FW;
-
-		} else {
-			_common_vtol_mode = mode::FIXED_WING;
-		}
-		
-	
+		_common_vtol_mode = mode::FIXED_WING;
 		break;
 
 	case vtol_mode::TRANSITION_TO_FW:

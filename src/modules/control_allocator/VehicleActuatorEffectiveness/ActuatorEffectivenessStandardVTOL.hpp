@@ -91,4 +91,9 @@ private:
 
 	uORB::Subscription _flaps_setpoint_sub{ORB_ID(flaps_setpoint)};
 	uORB::Subscription _spoilers_setpoint_sub{ORB_ID(spoilers_setpoint)};
+
+	DEFINE_PARAMETERS(
+		(ParamFloat<px4::params::VT_FW_MC_THR_I>) _param_vt_fw_mc_thr_i,
+		(ParamFloat<px4::params::VT_FW_MC_THR_B>) _param_vt_fw_mc_thr_b
+	)
 };
