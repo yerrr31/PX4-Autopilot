@@ -300,41 +300,4 @@ parameters:
       max: 1
       decimal: 1
       increment: 0.1
-    VT_FW_MC_THR_I:
-      description:
-        short: FW mode MC lift assist initial thrust
-        long: |
-          Initial normalized multicopter lift thrust applied immediately after entering fixed-wing mode.
-          This is used for Standard VTOL only.
-          Set to 0 to disable the initial assist component.
-      type: float
-      default: 0.0
-      min: 0.0
-      max: 0.5
-      decimal: 2
-      increment: 0.01
-    VT_FW_MC_THR_B:
-      description:
-         short: FW mode MC lift assist base thrust
-         long: |
-           Minimum normalized multicopter lift thrust maintained during fixed-wing mode after the ramp-down is complete.
-           This is used for Standard VTOL only.
-           Set to 0 to disable residual lift assist.
-      type: float
-      default: 0.0
-      min: 0.0
-      max: 0.5
-      decimal: 2
-      increment: 0.01
-    VT_FW_MC_THR_R:
-      description:
-        short: FW mode MC lift assist ramp time
-        long: |
-           Time in seconds to linearly ramp from VT_FW_MC_THR_I to VT_FW_MC_THR_B after entering fixed-wing mode.
-      type: float
-      default: 5.0
-      min: 0.0
-      max: 30.0
-      unit: s
-      decimal: 1
-      increment: 0.5
+    

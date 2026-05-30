@@ -60,3 +60,33 @@ parameters:
       min: 0
       increment: 0.01
       decimal: 2
+    VT_FW_MC_THR_I:
+      description:
+        short: FW MC lift assist initial thrust
+      type: float
+      default: 0.0
+      min: 0.0
+      max: 0.5
+      decimal: 2
+      increment: 0.01
+
+    VT_FW_MC_THR_B:
+      description:
+        short: FW MC lift assist base thrust
+      type: float
+      default: 0.0
+      min: 0.0
+      max: 0.5
+      decimal: 2
+      increment: 0.01
+
+    VT_FW_MC_THR_R:
+      description:
+        short: FW MC lift assist ramp time
+      type: float
+      default: 5.0
+      min: 0.0
+      max: 30.0
+      unit: s
+      decimal: 1
+      increment: 0.5
